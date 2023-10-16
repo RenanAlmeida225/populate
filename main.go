@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const MAX_CHUNCK int = 1000 //limit of postgres
+const MAX_CHUNK int = 1000 //limit of postgres
 
 var db *sql.DB = openConn()
 var saved int = 0
@@ -38,8 +38,8 @@ func main() {
 }
 
 func ReadCsv(ch chan<- [][]string) {
-	chunck := [][]string{}
-	chunck_len := 0
+	chunk := [][]string{}
+	chunk_len := 0
 	first_record := true
 	last_record := false
 
@@ -57,18 +57,18 @@ func ReadCsv(ch chan<- [][]string) {
 		}
 		if !last_record && !first_record {
 			record[1] = strings.Replace(record[1], "'", "''", -1)
-			chunck = append(chunck, record)
-			chunck_len++
+			chunk = append(chunk, record)
+			chunk_len++
 		}
 		if record != nil {
 			first_record = false
 		}
-		if chunck_len == MAX_CHUNCK {
-			ch <- chunck
-			chunck = [][]string{}
-			chunck_len = 0
+		if chunk_len == MAX_CHUNK {
+			ch <- chunk
+			chunk = [][]string{}
+			chunk_len = 0
 		} else if last_record {
-			ch <- chunck
+			ch <- chunk
 			break
 		}
 	}
